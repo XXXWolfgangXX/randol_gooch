@@ -11,12 +11,22 @@ end
 
 local function findRandomPlayer()
     local players = GetActivePlayers()
+    if #players == 0 then return false end
 
-    for i = 1, #players do
-        local id = players[i]
+    local tempStore = {}
+    local attempts = 0
 
-        if id and canBeChosen(id) then
-            return id
+    while attempts < #players do
+        local index = math.random(#players)
+        local id = players[index]
+
+        if not tempStore[id] then
+            tempStore[id] = true
+            attempts += 1
+
+            if id ~= lastPlayer and canBeChosen(id) then
+                return id
+            end
         end
     end
 
@@ -142,5 +152,6 @@ AddEventHandler('playerDropped', function(reason)
         goochedPlayer[src] = nil
     end
 end)
+
 
 SetInterval(goochInterval, Config.Timer * 60000) -- Will cycle every x minutes and pick a random player.
