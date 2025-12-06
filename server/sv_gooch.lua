@@ -13,20 +13,16 @@ local function findRandomPlayer()
     local players = GetActivePlayers()
     if #players == 0 then return false end
 
-    local tempStore = {}
-    local attempts = 0
+    for i = #players, 2, -1 do
+        local j = math.random(1, i)
+        players[i], players[j] = players[j], players[i]
+    end
 
-    while attempts < #players do
-        local index = math.random(#players)
-        local id = players[index]
+    for i = 1, #players do
+        local id = players[i]
 
-        if not tempStore[id] then
-            tempStore[id] = true
-            attempts += 1
-
-            if id ~= lastPlayer and canBeChosen(id) then
-                return id
-            end
+        if id ~= lastPlayer and canBeChosen(id) then
+            return id
         end
     end
 
