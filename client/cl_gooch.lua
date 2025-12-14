@@ -6,6 +6,7 @@ local function playGoochAudio(entity, audioName)
     local soundId = GetSoundId()
     PlaySoundFromEntity(soundId, audioName, entity, 'CM2022_Mugger_Sounds', false, -1)
     ReleaseSoundId(soundId)
+	ReleaseNamedScriptAudioBank('DLC_CM2022/CM2022_FREEMODE_01')
 end
 
 local function onGoochDeath()
@@ -164,4 +165,5 @@ RegisterNetEvent('randol_gooch:client:resetGooch', function()
     if GetInvokingResource() then return end
     DoNotification('The gooch got away with your shit, ggs.', 'error')
     table.wipe(gooch)
+
 end)
