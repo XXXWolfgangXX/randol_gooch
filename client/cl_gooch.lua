@@ -19,6 +19,7 @@ local function onGoochDeath()
         UseParticleFxAsset('scr_xt_mugger')
         StartNetworkedParticleFxNonLoopedOnEntityBone('scr_xt_mug_appear', gooch.ped, 0.0, 0.0, -0.3, 0.0, 0.0, 0.0, 11816, 1.0, false, false, false)
         TriggerServerEvent('randol_gooch:server:onDeath', NetworkGetNetworkIdFromEntity(gooch.ped))
+		RemoveNamedPtfxAsset('scr_xt_mugger')
     end
 end
 
@@ -77,6 +78,7 @@ RegisterNetEvent('randol_gooch:client:spawnGooch', function()
         Wait(0)
     end
 
+	SetModelAsNoLongerNeeded(model)
     TriggerServerEvent('randol_gooch:server:storeGooch', NetworkGetNetworkIdFromEntity(ped))
     gooch.ped = ped
     applySpawnAttributes(ped)
@@ -103,7 +105,8 @@ RegisterNetEvent('randol_gooch:client:spawnGooch', function()
     TriggerServerEvent('randol_gooch:server:stealMoney')
     goochBlip(ped)
     playGoochAudio(ped, 'Chase_Loop')
-
+	RemoveNamedPtfxAsset('scr_xt_mugger')
+	
     CreateThread(function()
         while DoesEntityExist(gooch.ped) do
             if #(GetEntityCoords(cache.ped) - GetEntityCoords(gooch.ped)) > 110.0 then
@@ -167,3 +170,4 @@ RegisterNetEvent('randol_gooch:client:resetGooch', function()
     table.wipe(gooch)
 
 end)
+
