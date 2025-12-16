@@ -114,7 +114,7 @@ RegisterNetEvent('randol_gooch:client:spawnGooch', function()
                 break
             end
 
-            if IsEntityDead(gooch.ped) and not gooch.dead then
+            if IsPedDeadOrDying(gooch.ped, true) and not gooch.dead then
                 gooch.dead = true
                 onGoochDeath()
                 break
@@ -170,4 +170,5 @@ RegisterNetEvent('randol_gooch:client:resetGooch', function()
     table.wipe(gooch)
 
 end)
+
 
