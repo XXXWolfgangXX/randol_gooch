@@ -1,6 +1,6 @@
 local Config = lib.require('server.sv_config')
 local lastPlayer = 0
-local goochedPlayer = {}
+local goochedPlayer
 
 local function canBeChosen(id)
     local ped = GetPlayerPed(id)
@@ -20,8 +20,7 @@ local function findRandomPlayer()
 
     for i = 1, #players do
         local id = players[i]
-
-        if id ~= lastPlayer and canBeChosen(id) then
+        if canBeChosen(id) then
             return id
         end
     end
@@ -32,27 +31,25 @@ end
 local function goochInterval()
     local id = findRandomPlayer()
     if id then
-        lastPlayer = id
-        goochedPlayer[id] = {}
-        TriggerClientEvent('randol_gooch:client:spawnGooch', id)
-    end
+	    lastPlayer = id
+	    goochedPlayer = { src = id }
+	    TriggerClientEvent('randol_gooch:client:spawnGooch', id)
+	end
 end
 
 RegisterNetEvent('randol_gooch:server:storeGooch', function(netId)
     local src = source
-    if lastPlayer ~= src or not goochedPlayer[src] then return end
+    if not goochedPlayer or goochedPlayer.src ~= src then return end
 
-    local gooch = NetworkGetEntityFromNetworkId(netId)
+    local entity = NetworkGetEntityFromNetworkId(netId)
+    if not DoesEntityExist(entity) or GetEntityModel(entity) ~= `U_M_M_YuleMonster` then return end
 
-    if not DoesEntityExist(gooch) or GetEntityModel(gooch) ~= `U_M_M_YuleMonster` then return end
-
-    goochedPlayer[src].netid = netId
-    goochedPlayer[src].entity = gooch
+    goochedPlayer.entity = entity
 end)
 
 RegisterNetEvent('randol_gooch:server:stealMoney', function()
     local src = source
-    if lastPlayer ~= src or not goochedPlayer[src] then return end
+    if not goochedPlayer or goochedPlayer.src ~= src then return end
 
     local player = GetPlayer(src)
     if not player then return end
@@ -60,7 +57,7 @@ RegisterNetEvent('randol_gooch:server:stealMoney', function()
     local cash = GetPlayersCash(player)
 
     if Config.StealPlayersCash and cash > 0 then
-        goochedPlayer[src].cash = cash
+        goochedPlayer.cash = cash
         RemoveMoney(player, 'cash', cash)
     end
 
@@ -76,27 +73,22 @@ end)
 
 RegisterNetEvent('randol_gooch:server:onDeath', function(netId)
     local src = source
-    if lastPlayer ~= src or not goochedPlayer[src] then return end
+    if not goochedPlayer or goochedPlayer.src ~= src then return end
 
-    local gooch = NetworkGetEntityFromNetworkId(netId)
+    local entity = NetworkGetEntityFromNetworkId(netId)
+    if not DoesEntityExist(entity) or GetEntityModel(entity) ~= `U_M_M_YuleMonster` then return end
 
-    if not DoesEntityExist(gooch) or GetEntityModel(gooch) ~= `U_M_M_YuleMonster` or not goochedPlayer[src].netid then return end
+    local coords = GetEntityCoords(entity)
 
-    local coords = GetEntityCoords(gooch)
-
-    if goochedPlayer[src].netid == netId and goochedPlayer[src].entity then
-        DeleteEntity(goochedPlayer[src].entity)
-    end
+    if goochedPlayer.entity ~= entity then return end
     
-    goochedPlayer[src].netid = nil
-    goochedPlayer[src].entity = nil
+    DeleteEntity(entity)
+    goochedPlayer.entity = nil
 
-    local present = CreateObjectNoOffset(`xm3_prop_xm3_present_01a`, coords.x, coords.y, coords.z-0.98, true, true)
-    while not DoesEntityExist(present) do
-        Wait(0)
-    end
+    local present = CreateObjectNoOffset(`xm3_prop_xm3_present_01a`, coords.x, coords.y, coords.z - 0.98, true, true)
+    while not DoesEntityExist(present) do Wait(0) end
 
-    goochedPlayer[src].present = present
+    goochedPlayer.present = present
 
     DoNotification(src, 'The Gooch has dropped a present', 'success')
     TriggerClientEvent('randol_gooch:client:dropPresent', src, NetworkGetNetworkIdFromEntity(present))
@@ -104,50 +96,52 @@ end)
 
 RegisterNetEvent('randol_gooch:server:goochGotAway', function()
     local src = source
-    if lastPlayer ~= src or not goochedPlayer[src] then return end
+    if not goochedPlayer or goochedPlayer.src ~= src then return end
 
-    if goochedPlayer[src].entity and DoesEntityExist(goochedPlayer[src].entity) then
-        DeleteEntity(goochedPlayer[src].entity)
-        goochedPlayer[src] = nil
+    if goochedPlayer.entity and DoesEntityExist(goochedPlayer.entity) then
+        DeleteEntity(goochedPlayer.entity)
         -- probably add your own logging here if the gooch gets away with your player's money KEKW.
         TriggerClientEvent('randol_gooch:client:resetGooch', src)
     end
+
+    goochedPlayer = nil
 end)
 
 lib.callback.register('randol_gooch:server:claimReward', function(source)
     local src = source
+    if not goochedPlayer or goochedPlayer.src ~= src then return false end
+    if not goochedPlayer.present or GetEntityModel(goochedPlayer.present) ~= `xm3_prop_xm3_present_01a` then return false end
 
-    if lastPlayer ~= src or not goochedPlayer[src] or not goochedPlayer[src].present or GetEntityModel(goochedPlayer[src].present) ~= `xm3_prop_xm3_present_01a` then return false end
+    local pedCoords = GetEntityCoords(GetPlayerPed(src))
+    local presentCoords = GetEntityCoords(goochedPlayer.present)
 
-    local pos = GetEntityCoords(GetPlayerPed(src))
-    local coords = GetEntityCoords(goochedPlayer[src].present)
-
-    if #(pos - coords) > 10.0 then return false end
+    if #(pedCoords - presentCoords) > 10.0 then return false end
 
     local player = GetPlayer(src)
     if not player then return false end
 
-    if Config.StealPlayersCash and goochedPlayer[src].cash then 
-        AddMoney(player, 'cash', goochedPlayer[src].cash)
+    if Config.StealPlayersCash and goochedPlayer.cash then
+        AddMoney(player, 'cash', goochedPlayer.cash)
         DoNotification(src, 'You got your cash back!', 'success')
     end
 
     Config.AdditionalRewards(player, src)
-    DeleteEntity(goochedPlayer[src].present)
-    goochedPlayer[src] = nil
+
+    DeleteEntity(goochedPlayer.present)
+    goochedPlayer = nil
 
     return true
 end)
 
-AddEventHandler('playerDropped', function(reason)
-	local src = source
-    if goochedPlayer[src] then
-        if goochedPlayer[src].entity then
-            DeleteEntity(goochedPlayer[src].entity)
-        end
-        goochedPlayer[src] = nil
-    end
-end)
+AddEventHandler('playerDropped', function()
+    local src = source
+    if not goochedPlayer or goochedPlayer.src ~= src then return end
 
+    if goochedPlayer.entity then
+        DeleteEntity(goochedPlayer.entity)
+    end
+
+    goochedPlayer = nil
+end)
 
 SetInterval(goochInterval, Config.Timer * 60000) -- Will cycle every x minutes and pick a random player.
