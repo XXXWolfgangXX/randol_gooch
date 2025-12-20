@@ -33,6 +33,7 @@ local function goochInterval()
     if id then
 	    lastPlayer = id
 	    goochedPlayer = { src = id }
+		Wait(1000)
 	    TriggerClientEvent('randol_gooch:client:spawnGooch', id)
 	end
 end
@@ -145,3 +146,4 @@ AddEventHandler('playerDropped', function()
 end)
 
 SetInterval(goochInterval, Config.Timer * 60000) -- Will cycle every x minutes and pick a random player.
+
